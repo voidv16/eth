@@ -1,0 +1,5 @@
+$secure = ConvertTo-SecureString "mypassword" -AsPlainText -Force
+$encrypted = ConvertFrom-SecureString $secure
+$encrypted
+$decrypted = ConvertTo-SecureString $encrypted
+[System.Net.NetworkCredential]::new("", $decrypted).Password

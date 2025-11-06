@@ -1,44 +1,45 @@
-import string
+def rc4(key, data):
+    """
+    Simple RC4 implementation (KSA + PRGA).
+    key: bytes or str
+    data: bytes or str
+    returns: bytes (ciphertext or decrypted plaintext)
+    """
+    # normalize inputs to bytes
+    if isinstance(key, str):
+        key = key.encode('utf-8')
+    if isinstance(data, str):
+        data = data.encode('utf-8')
 
-def xor_cipher(data, key):
-    result = []
-    data_bytes = data.encode('utf-8')
-    key_bytes = key.encode('utf-8')
-    key_len = len(key_bytes)
+    # Key-Scheduling Algorithm (KSA)
+    S = list(range(256))
+    j = 0
+    key_len = len(key)
+    for i in range(256):
+        j = (j + S[i] + key[i % key_len]) & 0xFF
+        S[i], S[j] = S[j], S[i]
 
-    for i in range(len(data_bytes)):
-        xored_byte = data_bytes[i] ^ key_bytes[i % key_len]
-        result.append(chr(xored_byte))
+    # Pseudo-Random Generation Algorithm (PRGA)
+    i = 0
+    j = 0
+    out = bytearray()
+    for byte in data:
+        i = (i + 1) & 0xFF
+        j = (j + S[i]) & 0xFF
+        S[i], S[j] = S[j], S[i]
+        K = S[(S[i] + S[j]) & 0xFF]
+        out.append(byte ^ K)
 
-    return "".join(result)
+    return bytes(out)
 
 
-PLAINTEXT = "MCA Ethical Hacking"
-SECRET_KEY = "x"
-CIPHERTEXT = xor_cipher(PLAINTEXT, SECRET_KEY)
+# Example usage
+if __name__ == "__main__":
+    plaintext = "MCA Ethical Hacking"
+    key = "x"
 
-print(f"Original Plaintext: {PLAINTEXT}")
-print(f"Secret Key Used: '{SECRET_KEY}'")
-# show a bytes representation so unprintable characters are visible
-print(
-    "Generated Ciphertext (may contain unprintable chars):",
-    repr(CIPHERTEXT.encode('utf-8'))
-)
-print("-" * 50)
+    ciphertext = rc4(key, plaintext)          # bytes
+    print("Ciphertext (hex):", ciphertext.hex())
 
-print("Starting Brute-Force Attack...")
-POSSIBLE_KEYS = string.ascii_lowercase
-FOUND = False
-
-for attempt_key in POSSIBLE_KEYS:
-    decrypted_text = xor_cipher(CIPHERTEXT, attempt_key)
-    # exact comparison to the original plaintext
-    if decrypted_text == PLAINTEXT:
-        print("\nDecryption Successful!")
-        print(f"Key Found: '{attempt_key}'")
-        print(f"Plaintext: {decrypted_text}")
-        FOUND = True
-        break
-
-if not FOUND:
-    print("Brute-force failed to find a key matching the expected plaintext.")
+    decrypted = rc4(key, ciphertext)          # rc4 is symmetric
+    print("Decrypted:", decrypted.decode('utf-8'))

